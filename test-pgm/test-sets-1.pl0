@@ -1,0 +1,32 @@
+const LOWER = 100;
+      UPPER = 131;
+type R32 = [LOWER..UPPER];  // ok: only 32 elements
+     SR = setof R32;
+     RN = [-31..0];
+     SN = setof RN;
+var r : int;
+    sr : SR;
+    sn : SN;
+begin
+  sr := SR{LOWER, LOWER+2, UPPER};
+  r := LOWER;
+  while r <= UPPER do
+    begin
+      if r : sr then
+        write r
+      else
+        r := r;   // skip
+      r := r+1
+    end;
+  sn := SN{-31, -31+2, 0};
+  r := -31;
+  while r <= 0 do
+    begin
+      if r : sn then
+        write r
+      else
+        r := r;   // skip
+      r := r+1
+    end
+end
+

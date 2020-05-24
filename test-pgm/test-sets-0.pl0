@@ -1,0 +1,20 @@
+const UPPER = 15;
+type R = [0..UPPER];
+     R1 = [0..16];
+     SR = setof R;
+var r : R1;
+    sr: SR;
+begin
+  sr := SR{0, 5, 10, 10+5};
+  r := 0;
+  while r <= UPPER do
+    begin
+      if r : sr then
+        write r
+      else
+        r := r;   // skip
+      r := r+1
+    end;
+  if 15 : sr then write 101 else write -98;
+  if 32+15 : sr then write -99 else write 100
+end

@@ -1,0 +1,13 @@
+Compiling test-base3-bounds.pl0
+Parsing complete
+Static semantic analysis complete
+Code generation complete
+Running ...
+102
+101
+100
+
+Runtime error: bounds check failed 99 not in 100..102
+
+Terminated
+No errors detected.

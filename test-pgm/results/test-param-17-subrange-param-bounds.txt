@@ -1,0 +1,11 @@
+Compiling test-param-17-subrange-param-bounds.pl0
+Parsing complete
+Static semantic analysis complete
+Code generation complete
+Running ...
+100
+
+Runtime error: bounds check failed -99 not in 1..100
+
+Terminated
+No errors detected.

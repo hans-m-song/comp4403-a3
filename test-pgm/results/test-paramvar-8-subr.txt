@@ -1,0 +1,7 @@
+Compiling test-paramvar-8-subr.pl0
+Parsing complete
+    16   call p(y, s, y, s );  // invalid var param types
+******                ^  Error: type should be ref(S) not ref(int)
+******                   ^  Error: type should be ref(int) not ref(S)
+Static semantic analysis complete
+2 errors detected.

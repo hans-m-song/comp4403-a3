@@ -1,0 +1,14 @@
+Compiling test-sets-1.pl0
+Parsing complete
+Static semantic analysis complete
+Code generation complete
+Running ...
+100
+102
+131
+-31
+-29
+0
+
+Terminated
+No errors detected.

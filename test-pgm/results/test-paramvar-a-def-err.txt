@@ -1,0 +1,11 @@
+Compiling test-paramvar-a-def-err.pl0
+Parsing complete
+     4     y := x-1
+******           ^  Error: cannot coerce int to boolean
+    12   call p();   // too few parameters
+******        ^  Error: wrong number of parameters
+    13   call p(b, z); // explicit parameters of wrong type
+******          ^  Error: cannot coerce boolean to int
+******             ^  Error: type should be ref(boolean) not ref(int)
+Static semantic analysis complete
+4 errors detected.

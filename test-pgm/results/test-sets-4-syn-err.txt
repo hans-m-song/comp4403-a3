@@ -1,0 +1,8 @@
+Compiling test-sets-4-syn-err.pl0
+     8   sr := SR{ , 0, 5, 10, 10+5};
+******             ^  Error: PL0 syntax error
+     9   sr := SR{ 0, 5, 10, 10+5, }
+******                             ^  Error: PL0 syntax error
+Parsing complete
+Static semantic analysis complete
+2 errors detected.

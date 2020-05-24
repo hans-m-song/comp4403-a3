@@ -1,0 +1,38 @@
+const LOWER = 1;
+      UPPER = 3;
+type R3 = [LOWER..UPPER];
+     S3 = setof R3;
+var
+    s1 : S3;
+    s2 : S3;
+    s  : S3;
+procedure print(s : S3) =
+  var r : int;
+  begin
+    r := LOWER;
+    while r <= UPPER do
+      begin
+        if r : s then
+          write r
+        else
+          r := r;   // skip
+        r := r+1
+      end;
+      write -999
+  end; // print
+
+begin // main
+  s1 := S3{1,3};
+  call print(s1); // 1 3 -999
+  s2 := S3{1,2};
+  call print(s2); // 1 2 -999
+  s := s1 + s2;  // 1 2 3
+  call print(s); // 1 2 3 -999
+  s := s1 * s2;  // 1
+  call print(s); // 1 -999
+  s := s1 - s2;  // 3
+  call print(s); // 3 -999
+  s := ~s1;      // 2
+  call print(s)  // 2 -999
+end
+

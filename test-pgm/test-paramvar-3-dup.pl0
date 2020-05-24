@@ -1,0 +1,14 @@
+procedure p(var x: int, var y: int) =
+  begin
+    x := 103;
+    write f;  //103
+    y := 102;
+    write f;  // 102
+    y := y-1
+  end;
+var
+  f: int;
+begin
+  call p(f, f);  // ok but not good style
+  write f  // 101
+end

@@ -1,0 +1,12 @@
+type B = [false..true];
+     SB = setof B;
+var  s : SB;
+     r : boolean;
+begin // main
+  s := SB{false,true};
+  if true : s then write 103 else write -99;
+  if false : s then write 102 else write -98;
+  s := SB{};
+  if true : s then write -97 else write 101;
+  if false : s then write -96 else write 100
+end

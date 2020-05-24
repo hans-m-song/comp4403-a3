@@ -1,0 +1,10 @@
+const UPPER = 15;
+type R = [0..UPPER];
+     R1 = [0..16];
+     SR = setof R;
+var r : R1;
+    sr: SR;
+begin
+  sr := SR{ , 0, 5, 10, 10+5};
+  sr := SR{ 0, 5, 10, 10+5, }
+end

@@ -1,0 +1,9 @@
+Compiling test-param-08-stack-leak.pl0
+Parsing complete
+Static semantic analysis complete
+Code generation complete
+Running ...
+50005000
+
+Terminated
+No errors detected.

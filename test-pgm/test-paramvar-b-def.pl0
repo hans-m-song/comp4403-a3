@@ -1,0 +1,22 @@
+procedure p(x: int, var y: boolean) =
+  begin
+    write x;
+    if y then
+      write x-1
+    else
+      write z-1
+  end;
+
+var
+  y: int;
+  z: int;
+  x: boolean;
+begin
+  y := 103;
+  x := true;
+  z := -99;
+  call p(y, x);   // 103, 102
+  x := false;
+  z := 101;
+  call p(z, x)  // 101, 100
+end

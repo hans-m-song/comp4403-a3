@@ -1,0 +1,15 @@
+procedure p(x: int, var y: boolean) = 
+  begin
+    write x;
+    y := x-1
+  end;
+
+var
+  y: int;
+  z: int;
+  b: boolean;
+begin
+  call p();   // too few parameters
+  call p(b, z); // explicit parameters of wrong type
+  call p(y, b )  // explicit parameters of the correct type
+end
