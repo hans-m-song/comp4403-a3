@@ -1,6 +1,7 @@
 package tree;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import java_cup.runtime.ComplexSymbolFactory.Location;
 import syms.SymEntry;
@@ -430,4 +431,37 @@ public abstract class ExpNode {
         }
     }
 
+    public static class SetNode extends ExpNode {
+        private final List<ExpNode> elements;
+
+        public SetNode(Location loc, Type type, List<ExpNode> elements) {
+            super(loc, type);
+            this.elements = elements;
+            this.type = type;
+            System.out.println(toString());
+        }
+
+        public List<ExpNode> getElements() {
+            return elements;
+        }
+
+        @Override
+        public ExpNode transform(ExpTransform<ExpNode> visitor) {
+            return null;
+        }
+
+        @Override
+        public Code genCode(ExpTransform<Code> visitor) {
+            return null;
+        }
+
+        @Override
+        public String toString() {
+            String elementsString = elements
+                    .stream()
+                    .map(ExpNode::toString)
+                    .collect(Collectors.joining(", "));
+            return "SetNode(" + getType() + ": {" + elementsString + "})";
+        }
+    }
 }

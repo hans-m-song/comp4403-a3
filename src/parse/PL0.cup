@@ -168,6 +168,7 @@ non terminal Operator         Relation,
                               MulOp,
                               UnaryOperator;
 non terminal ExpNode          LValue;
+non terminal List<ExpNode>    ElementList;
 
 
 /**-------------------------------------------------------------
@@ -327,6 +328,10 @@ Type ::= TypeIdentifier:type
     | LBRACKET:subr Constant:lo RANGE Constant:hi RBRACKET
         {:
             RESULT = new Type.SubrangeType(subrxleft, lo, hi);
+        :}
+    | KW_SETOF:set Type:type
+        {:
+            RESULT = new Type.SetType(setxleft, type);
         :}
     | error:err
         {:
@@ -578,11 +583,32 @@ Factor ::= PLUS Factor:e
             RESULT = new ExpNode.ConstNode(nxleft, 
                     Predefined.INTEGER_TYPE, n);
         :}
+    |  TypeIdentifier:type LCURLY ElementList:el RCURLY
+        {:
+            RESULT = new ExpNode.SetNode(typexleft, type, el);
+        :}
+    |  TypeIdentifier:type LCURLY RCURLY
+        {:
+            RESULT = new ExpNode.SetNode(typexleft, type, new ArrayList<ExpNode>());
+        :}
     |  LValue:lval
         {:
             RESULT = lval;
         :}
     ;
+
+ElementList ::= Condition:cond
+        {:
+            RESULT = new ArrayList<>();
+            RESULT.add(cond);
+        :}
+    |  Condition:cond COMMA ElementList:el
+        {:
+            el.add(cond);
+            RESULT = el;
+        :}
+    ;
+
 UnaryOperator ::= MINUS
         {:
             RESULT = Operator.NEG_OP;
