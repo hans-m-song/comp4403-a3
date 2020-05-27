@@ -438,7 +438,6 @@ public abstract class ExpNode {
             super(loc, type);
             this.elements = elements;
             this.type = type;
-            System.out.println(toString());
         }
 
         public List<ExpNode> getElements() {
@@ -447,7 +446,7 @@ public abstract class ExpNode {
 
         @Override
         public ExpNode transform(ExpTransform<ExpNode> visitor) {
-            return null;
+            return visitor.visitSetNode(this);
         }
 
         @Override

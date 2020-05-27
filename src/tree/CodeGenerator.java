@@ -415,6 +415,11 @@ public class CodeGenerator implements DeclVisitor, StatementTransform<Code>,
         endGen("WidenSubrange");
         return code;
     }
+
+    @Override
+    public Code visitSetNode(ExpNode.SetNode node) {
+        return null;
+    }
     //**************************** Support Methods
 
     /**

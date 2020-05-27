@@ -486,6 +486,44 @@ public class StaticChecker implements DeclVisitor, StatementVisitor,
         return node;
     }
 
+    public ExpNode visitSetNode(ExpNode.SetNode node) {
+        beginCheck("SetNode");
+        Type.SetType type = node
+                .getType()
+                .resolveType()
+                .getSetType();
+        System.out.println(type + " : " + type.getClass());
+        if (type == null) {
+            staticError("Must be a set type", node.getLocation());
+            endCheck("SetNode");
+            return node;
+        }
+        List<ExpNode> elements = node.getElements();
+        if (elements.size() > type.maxElements) {
+            staticError("More than 32 elements in set", node.getLocation());
+            endCheck("SetNode");
+            return node;
+        }
+        Type elementType = type.getElementType();
+        if (elementType instanceof Type.SubrangeType) {
+            elementType = ((Type.SubrangeType) elementType).getBaseType();
+        }
+        node.setType(type);
+        ExpNode transformed;
+        for (int i = 0; i < elements.size(); i++) {
+            transformed = elements.get(i).transform(this);
+//            if (!(transformed.getType().equals(elementType))) {
+//                staticError("Element type does not match set type", transformed.getLocation());
+//                endCheck("SetNode");
+//                return node;
+//            }
+            elements.set(i, transformed);
+        }
+        System.out.println(node);
+        endCheck("SetNode");
+        return node;
+    }
+
     //**************************** Support Methods
 
     /**
