@@ -522,6 +522,10 @@ Relation ::= EQUALS
         {:
             RESULT = Operator.GEQUALS_OP;
         :}
+    | COLON
+        {:
+            RESULT = Operator.IN_OP;
+        :}
     ;
 /* Expressions are structured into Exp, Term, and Factor to encode the
  * precedence of the operators in the grammar.
@@ -612,6 +616,10 @@ ElementList ::= Condition:cond
 UnaryOperator ::= MINUS
         {:
             RESULT = Operator.NEG_OP;
+        :}
+    |  SET_COMPLEMENT
+        {:
+            RESULT = Operator.COMPLEMENT_OP;
         :}
     ;
 

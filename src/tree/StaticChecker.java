@@ -492,7 +492,6 @@ public class StaticChecker implements DeclVisitor, StatementVisitor,
                 .getType()
                 .resolveType()
                 .getSetType();
-        System.out.println(type + " : " + type.getClass());
         if (type == null) {
             staticError("Must be a set type", node.getLocation());
             endCheck("SetNode");
@@ -508,6 +507,7 @@ public class StaticChecker implements DeclVisitor, StatementVisitor,
         if (elementType instanceof Type.SubrangeType) {
             elementType = ((Type.SubrangeType) elementType).getBaseType();
         }
+        type.addOperators(currentScope);
         node.setType(type);
         ExpNode transformed;
         for (int i = 0; i < elements.size(); i++) {
@@ -519,7 +519,6 @@ public class StaticChecker implements DeclVisitor, StatementVisitor,
 //            }
             elements.set(i, transformed);
         }
-        System.out.println(node);
         endCheck("SetNode");
         return node;
     }

@@ -1209,6 +1209,26 @@ public abstract class Type {
             return elementType;
         }
 
+        public void addOperators(Scope scope) {
+            ProductType elementSetType = new ProductType(elementType, this);
+            ProductType pairSetType = new ProductType(this, this);
+            FunctionType member = new FunctionType(elementSetType, Predefined.BOOLEAN_TYPE);
+            FunctionType equals = new FunctionType(pairSetType, Predefined.BOOLEAN_TYPE);
+            FunctionType nEquals = new FunctionType(pairSetType, Predefined.BOOLEAN_TYPE);
+            FunctionType union = new FunctionType(pairSetType, this);
+            FunctionType intersection = new FunctionType(pairSetType, this);
+            FunctionType difference = new FunctionType(pairSetType, this);
+            FunctionType complement = new FunctionType(pairSetType, this);
+            scope.addOperator(Operator.IN_OP, ErrorHandler.NO_LOCATION, member);
+            scope.addOperator(Operator.EQUALS_OP, ErrorHandler.NO_LOCATION, equals);
+            scope.addOperator(Operator.NEQUALS_OP, ErrorHandler.NO_LOCATION, nEquals);
+            scope.addOperator(Operator.UNION_OP, ErrorHandler.NO_LOCATION, union);
+            scope.addOperator(Operator.INTERSECTION_OP, ErrorHandler.NO_LOCATION, intersection);
+            scope.addOperator(Operator.DIFFERENCE_OP, ErrorHandler.NO_LOCATION, difference);
+            scope.addOperator(Operator.COMPLEMENT_OP, ErrorHandler.NO_LOCATION, complement);
+        }
+
+
         @Override
         public SetType resolveType() {
             elementType = elementType.resolveType();
