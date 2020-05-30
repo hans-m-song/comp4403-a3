@@ -519,7 +519,6 @@ public class StaticChecker implements DeclVisitor, StatementVisitor,
 //            }
             elements.set(i, transformed);
         }
-        node.setWord(currentScope.allocVariableSpace(type.getSpace()));
         endCheck("SetNode");
         return node;
     }

@@ -416,9 +416,33 @@ public class CodeGenerator implements DeclVisitor, StatementTransform<Code>,
         return code;
     }
 
+    private Code load(ExpNode node) {
+        Code code = node.genCode(this);
+        if (node instanceof ExpNode.VariableNode) {
+            code.genLoad(node.getType());
+        }
+        return code;
+    }
+
     @Override
     public Code visitSetNode(ExpNode.SetNode node) {
-        return null;
+        beginGen("SetNode");
+        Type.SetType type = node.getType().getSetType();
+        Type.SubrangeType subType = (Type.SubrangeType) type.getElementType();
+        Code code = new Code();
+        List<ExpNode> elements = node.getElements();
+        code.generateOp(Operation.ZERO);
+        for (ExpNode element : elements) {
+            code.generateOp(Operation.ONE);
+            code.append(load(element));
+            code.genLoadConstant(-subType.getLower());
+            code.generateOp(Operation.ADD);
+            code.genBoundsCheck(subType.getLower(), subType.getUpper());
+            code.generateOp(Operation.SHIFT_LEFT);
+            code.generateOp(Operation.OR);
+        }
+        endGen("SetNode");
+        return code;
     }
     //**************************** Support Methods
 
