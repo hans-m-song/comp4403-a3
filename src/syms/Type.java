@@ -1228,7 +1228,6 @@ public abstract class Type {
             scope.addOperator(Operator.COMPLEMENT_OP, ErrorHandler.NO_LOCATION, complement);
         }
 
-
         @Override
         public SetType resolveType() {
             elementType = elementType.resolveType();
@@ -1237,6 +1236,7 @@ public abstract class Type {
                 if (et.getUpper() - et.getLower() >= maxElements) {
                     errors.error("more than " + maxElements + " elements in set", loc);
                 }
+                space = SIZE_OF_INT;
             } else {
                 // System.out.println("Element type " + elementType);
                 errors.error("element type must be subrange", loc);

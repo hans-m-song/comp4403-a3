@@ -503,10 +503,10 @@ public class StaticChecker implements DeclVisitor, StatementVisitor,
             endCheck("SetNode");
             return node;
         }
-        Type elementType = type.getElementType();
-        if (elementType instanceof Type.SubrangeType) {
-            elementType = ((Type.SubrangeType) elementType).getBaseType();
-        }
+//        Type elementType = type.getElementType();
+//        if (elementType instanceof Type.SubrangeType) {
+//            elementType = ((Type.SubrangeType) elementType).getBaseType();
+//        }
         type.addOperators(currentScope);
         node.setType(type);
         ExpNode transformed;
@@ -519,6 +519,7 @@ public class StaticChecker implements DeclVisitor, StatementVisitor,
 //            }
             elements.set(i, transformed);
         }
+        node.setWord(currentScope.allocVariableSpace(type.getSpace()));
         endCheck("SetNode");
         return node;
     }

@@ -433,11 +433,20 @@ public abstract class ExpNode {
 
     public static class SetNode extends ExpNode {
         private final List<ExpNode> elements;
+        private int word;
 
         public SetNode(Location loc, Type type, List<ExpNode> elements) {
             super(loc, type);
             this.elements = elements;
             this.type = type;
+        }
+
+        public int getWord() {
+            return word;
+        }
+
+        public void setWord(int word) {
+            this.word = word;
         }
 
         public List<ExpNode> getElements() {
@@ -451,7 +460,7 @@ public abstract class ExpNode {
 
         @Override
         public Code genCode(ExpTransform<Code> visitor) {
-            return null;
+            return visitor.visitSetNode(this);
         }
 
         @Override
