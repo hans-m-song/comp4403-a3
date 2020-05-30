@@ -329,6 +329,32 @@ public class CodeGenerator implements DeclVisitor, StatementTransform<Code>,
                 code = genArgs(right, left);
                 code.generateOp(Operation.LESSEQ);
                 break;
+            case IN_OP:
+                Type.SubrangeType range = (Type.SubrangeType) right.getType()
+                        .getSetType().getElementType();
+                code = new Code();
+                code.generateOp(Operation.ONE);
+                code.append(load(left));
+                code.genLoadConstant(-range.getLower());
+                code.generateOp(Operation.ADD);
+                code.generateOp(Operation.SHIFT_LEFT);
+                code.generateOp(Operation.DUP);
+                code.append(right.genCode(this));
+                code.generateOp(Operation.AND);
+                code.generateOp(Operation.EQUAL);
+                code.genLoadConstant(-1);
+                code.append(load(left));
+                code.genLoadConstant(-range.getLower());
+                code.generateOp(Operation.ADD);
+                code.generateOp(Operation.LESS);
+                code.append(load(left));
+                code.genLoadConstant(-range.getLower());
+                code.generateOp(Operation.ADD);
+                code.genLoadConstant(32);
+                code.generateOp(Operation.LESS);
+                code.generateOp(Operation.AND);
+                code.generateOp(Operation.AND);
+                break;
             default:
                 errors.fatal("PL0 Internal error: Unknown operator",
                         node.getLocation());
@@ -417,11 +443,21 @@ public class CodeGenerator implements DeclVisitor, StatementTransform<Code>,
     }
 
     private Code load(ExpNode node) {
-        Code code = node.genCode(this);
+        Code code = new Code();
         if (node instanceof ExpNode.VariableNode) {
+            code.append(node.genCode(this));
             code.genLoad(node.getType());
+        } else if (node instanceof ExpNode.NarrowSubrangeNode) {
+            code.append(((ExpNode.NarrowSubrangeNode) node).getExp().genCode(this));
+        } else {
+            code.append(node.genCode(this));
         }
         return code;
+    }
+
+    private void debug(Code code) {
+        code.generateOp(Operation.DUP);
+        code.generateOp(Operation.WRITE);
     }
 
     @Override
@@ -437,7 +473,7 @@ public class CodeGenerator implements DeclVisitor, StatementTransform<Code>,
             code.append(load(element));
             code.genLoadConstant(-subType.getLower());
             code.generateOp(Operation.ADD);
-            code.genBoundsCheck(subType.getLower(), subType.getUpper());
+            code.genBoundsCheck(0, subType.getUpper() - subType.getLower());
             code.generateOp(Operation.SHIFT_LEFT);
             code.generateOp(Operation.OR);
         }
