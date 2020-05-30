@@ -355,6 +355,18 @@ public class CodeGenerator implements DeclVisitor, StatementTransform<Code>,
                 code.generateOp(Operation.AND);
                 code.generateOp(Operation.AND);
                 break;
+            case UNION_OP:
+                code = genArgs(left, right);
+                code.generateOp(Operation.OR);
+                break;
+            case INTERSECTION_OP:
+                code = genArgs(left, right);
+                code.generateOp(Operation.AND);
+                break;
+            case DIFFERENCE_OP:
+                code = genArgs(left, right);
+                code.generateOp(Operation.XOR);
+                break;
             default:
                 errors.fatal("PL0 Internal error: Unknown operator",
                         node.getLocation());
@@ -370,6 +382,9 @@ public class CodeGenerator implements DeclVisitor, StatementTransform<Code>,
         beginGen("Unary");
         Code code = node.getArg().genCode(this);
         switch (node.getOp()) {
+            case COMPLEMENT_OP:
+                code.generateOp(Operation.NOT);
+                break;
             case NEG_OP:
                 code.generateOp(Operation.NEGATE);
                 break;

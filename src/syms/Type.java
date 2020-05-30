@@ -1218,7 +1218,7 @@ public abstract class Type {
             FunctionType union = new FunctionType(pairSetType, this);
             FunctionType intersection = new FunctionType(pairSetType, this);
             FunctionType difference = new FunctionType(pairSetType, this);
-            FunctionType complement = new FunctionType(pairSetType, this);
+            FunctionType complement = new FunctionType(this, this);
             scope.addOperator(Operator.IN_OP, ErrorHandler.NO_LOCATION, member);
             scope.addOperator(Operator.EQUALS_OP, ErrorHandler.NO_LOCATION, equals);
             scope.addOperator(Operator.NEQUALS_OP, ErrorHandler.NO_LOCATION, nEquals);
