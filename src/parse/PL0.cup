@@ -482,6 +482,10 @@ Statement ::= KW_WHILE Condition:c KW_DO Statement:s
        :} 
     |  KW_CALL IDENTIFIER:id LPAREN ActualParamList:pl RPAREN
         {: 
+            RESULT = new StatementNode.CallNode(idxleft, id, pl);
+        :}
+    |  KW_CALL IDENTIFIER:id LPAREN RPAREN
+        {:
             RESULT = new StatementNode.CallNode(idxleft, id);
         :}
     |  error:loc

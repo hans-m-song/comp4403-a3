@@ -282,10 +282,16 @@ public abstract class StatementNode {
     public static class CallNode extends StatementNode {
         private final String id;
         private SymEntry.ProcedureEntry procEntry;
+        private List<ExpNode> params = null;
 
         public CallNode(Location loc, String id) {
             super(loc);
             this.id = id;
+        }
+
+        public CallNode(Location loc, String id, List<ExpNode> params) {
+            this(loc, id);
+            this.params = params;
         }
 
         @Override
@@ -312,8 +318,15 @@ public abstract class StatementNode {
 
         @Override
         public String toString(int level) {
-            StringBuilder s = new StringBuilder("CALL " + id);
-            return s + ")";
+            return "CALL " + id + "("
+                    + (params == null ? "" : params.stream()
+                    .map(ExpNode::toString)
+                    .collect(java.util.stream.Collectors.joining(", ")))
+                    + ")";
+        }
+
+        public List<ExpNode> getParams() {
+            return params;
         }
     }
 
