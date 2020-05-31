@@ -1,7 +1,6 @@
 package tree;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 import java_cup.runtime.ComplexSymbolFactory.Location;
 import syms.SymEntry;
@@ -459,7 +458,7 @@ public abstract class ExpNode {
             String elementsString = elements
                     .stream()
                     .map(ExpNode::toString)
-                    .collect(Collectors.joining(", "));
+                    .collect(java.util.stream.Collectors.joining(", "));
             return "SetNode(" + getType() + ": {" + elementsString + "})";
         }
     }

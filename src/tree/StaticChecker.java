@@ -503,20 +503,10 @@ public class StaticChecker implements DeclVisitor, StatementVisitor,
             endCheck("SetNode");
             return node;
         }
-//        Type elementType = type.getElementType();
-//        if (elementType instanceof Type.SubrangeType) {
-//            elementType = ((Type.SubrangeType) elementType).getBaseType();
-//        }
-        type.addOperators(currentScope);
         node.setType(type);
         ExpNode transformed;
         for (int i = 0; i < elements.size(); i++) {
             transformed = elements.get(i).transform(this);
-//            if (!(transformed.getType().equals(elementType))) {
-//                staticError("Element type does not match set type", transformed.getLocation());
-//                endCheck("SetNode");
-//                return node;
-//            }
             elements.set(i, transformed);
         }
         endCheck("SetNode");

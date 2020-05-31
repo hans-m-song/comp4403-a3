@@ -593,7 +593,7 @@ Factor ::= PLUS Factor:e
         :}
     |  TypeIdentifier:type LCURLY RCURLY
         {:
-            RESULT = new ExpNode.SetNode(typexleft, type, new ArrayList<ExpNode>());
+            RESULT = new ExpNode.SetNode(typexleft, type, new ArrayList<>());
         :}
     |  LValue:lval
         {:
@@ -606,7 +606,7 @@ ElementList ::= Condition:cond
             RESULT = new ArrayList<>();
             RESULT.add(cond);
         :}
-    |  Condition:cond COMMA ElementList:el
+    |  ElementList:el COMMA Condition:cond
         {:
             el.add(cond);
             RESULT = el;
