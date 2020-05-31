@@ -376,22 +376,46 @@ ProcedureHead ::= KW_PROCEDURE IDENTIFIER:id
             LPAREN FormalParamList:pl 
             RPAREN
         {:
-            /* Add an entry for the procedure to the current scope */
-            SymEntry.ProcedureEntry procEntry = currentScope.addProcedure(id, idxleft);
+            Type.ProcedureType type = new Type.ProcedureType(idxleft);
+            SymEntry.ProcedureEntry procEntry = (SymEntry.ProcedureEntry) currentScope.addEntry(
+                    new SymEntry.ProcedureEntry(id, idxleft, type));
             if(procEntry == null) {
                 errors.error(id + " already declared in this scope", idxleft);
-                /* Create a dummy symbol table entry.
-                 * Note that this entry isn't added to the symbol table
-                 * but the RESULT attribute of ProcedureHead must return a
-                 * ProcedureEntry. */
                 procEntry = new SymEntry.ProcedureEntry(id, idxleft);
                 procEntry.setScope(currentScope);
             }
-            /* Create a new scope for the symbols local to
-             * the procedure. */
             currentScope = currentScope.newScope(procEntry);
+            List<SymEntry.ParamEntry> params = new ArrayList<>();
+            pl.forEach(param -> {
+                if (currentScope.addEntry(param) == null) {
+                    errors.error(id + " repeated", idxleft);
+                } else {
+                    params.add(param);
+                }
+            });
+            type.setFormalParams(params);
             RESULT = procEntry;
         :}
+    |  KW_PROCEDURE IDENTIFIER:id
+                   LPAREN
+                   RPAREN
+               {:
+                   /* Add an entry for the procedure to the current scope */
+                   SymEntry.ProcedureEntry procEntry = currentScope.addProcedure(id, idxleft);
+                   if(procEntry == null) {
+                       errors.error(id + " already declared in this scope", idxleft);
+                       /* Create a dummy symbol table entry.
+                        * Note that this entry isn't added to the symbol table
+                        * but the RESULT attribute of ProcedureHead must return a
+                        * ProcedureEntry. */
+                       procEntry = new SymEntry.ProcedureEntry(id, idxleft);
+                       procEntry.setScope(currentScope);
+                   }
+                   /* Create a new scope for the symbols local to
+                    * the procedure. */
+                   currentScope = currentScope.newScope(procEntry);
+                   RESULT = procEntry;
+               :}
     |  KW_PROCEDURE IDENTIFIER:id error
         {:
             /* On a syntax error in a procedure head a dummy ProcedureEntry is
@@ -481,7 +505,7 @@ Statement ::= KW_WHILE Condition:c KW_DO Statement:s
           RESULT = new StatementNode.AssignmentNode(lvalxleft, lval, rval);
        :} 
     |  KW_CALL IDENTIFIER:id LPAREN ActualParamList:pl RPAREN
-        {: 
+        {:
             RESULT = new StatementNode.CallNode(idxleft, id, pl);
         :}
     |  KW_CALL IDENTIFIER:id LPAREN RPAREN
