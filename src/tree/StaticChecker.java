@@ -67,6 +67,7 @@ public class StaticChecker implements DeclVisitor, StatementVisitor,
     public void visitProcedureNode(DeclNode.ProcedureNode node) {
         beginCheck("Procedure");
         SymEntry.ProcedureEntry procEntry = node.getProcEntry();
+        List<SymEntry.ParamEntry> params = procEntry.getType().getFormalParams();
         // Save the block's abstract syntax tree in the procedure entry
         procEntry.setBlock(node.getBlock());
         // The local scope is that for the procedure.
@@ -75,6 +76,7 @@ public class StaticChecker implements DeclVisitor, StatementVisitor,
         localScope.resolveScope();
         // Enter the local scope of the procedure
         currentScope = localScope;
+        // TODO var params?
         // Check the block of the procedure.
         visitBlockNode(node.getBlock());
         // Restore the symbol table to the parent scope
@@ -182,6 +184,21 @@ public class StaticChecker implements DeclVisitor, StatementVisitor,
         if (entry instanceof SymEntry.ProcedureEntry) {
             SymEntry.ProcedureEntry procEntry = (SymEntry.ProcedureEntry) entry;
             node.setEntry(procEntry);
+            List<SymEntry.ParamEntry> formalParams = procEntry.getType().getFormalParams();
+            List<ExpNode> actualParams = node.getParams();
+            if (formalParams.size() == actualParams.size()) {
+                for (int i = 0; i < formalParams.size(); i++) {
+                    // TODO var params?
+                    ExpNode coerced = formalParams.get(i).getType()
+                            .optDereferenceType()
+                            .optWidenSubrange()
+                            .coerceExp(actualParams.get(i).transform(this));
+                    actualParams.set(i, coerced);
+                }
+                node.setParams(actualParams);
+            } else {
+                staticError("wrong number of parameters", node.getLocation());
+            }
         } else {
             staticError("Procedure identifier required", node.getLocation());
         }
