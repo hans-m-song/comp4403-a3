@@ -282,11 +282,12 @@ public abstract class StatementNode {
     public static class CallNode extends StatementNode {
         private final String id;
         private SymEntry.ProcedureEntry procEntry;
-        private List<ExpNode> params = null;
+        private List<ExpNode> params;
 
         public CallNode(Location loc, String id) {
             super(loc);
             this.id = id;
+            this.params = new ArrayList<>();
         }
 
         public CallNode(Location loc, String id, List<ExpNode> params) {
@@ -327,6 +328,10 @@ public abstract class StatementNode {
 
         public List<ExpNode> getParams() {
             return params;
+        }
+
+        public void setParams(List<ExpNode> params) {
+            this.params = params;
         }
     }
 
