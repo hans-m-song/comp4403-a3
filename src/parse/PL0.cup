@@ -388,7 +388,7 @@ ProcedureHead ::= KW_PROCEDURE IDENTIFIER:id
             List<SymEntry.ParamEntry> params = new ArrayList<>();
             pl.forEach(param -> {
                 if (currentScope.addEntry(param) == null) {
-                    errors.error(id + " repeated", idxleft);
+                    errors.error(param.getIdent() + " repeated", param.getLocation());
                 } else {
                     params.add(param);
                 }
