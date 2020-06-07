@@ -67,7 +67,6 @@ public class StaticChecker implements DeclVisitor, StatementVisitor,
     public void visitProcedureNode(DeclNode.ProcedureNode node) {
         beginCheck("Procedure");
         SymEntry.ProcedureEntry procEntry = node.getProcEntry();
-        List<SymEntry.ParamEntry> params = procEntry.getType().getFormalParams();
         // Save the block's abstract syntax tree in the procedure entry
         procEntry.setBlock(node.getBlock());
         // The local scope is that for the procedure.
@@ -188,13 +187,17 @@ public class StaticChecker implements DeclVisitor, StatementVisitor,
             List<ExpNode> actualParams = node.getParams();
             if (formalParams.size() == actualParams.size()) {
                 for (int i = 0; i < formalParams.size(); i++) {
+                    SymEntry.ParamEntry formalParam = formalParams.get(i);
+                    ExpNode actualParam = actualParams.get(i);
                     // TODO var params?
-                    ExpNode coerced = formalParams.get(i).getType()
+                    ExpNode coerced = formalParam.getType()
                             .optDereferenceType()
                             .optWidenSubrange()
-                            .coerceExp(actualParams.get(i).transform(this));
+                            .coerceExp(actualParam.transform(this));
                     actualParams.set(i, coerced);
+                    formalParam.setOffset(currentScope.allocParameterSpace(formalParam.getSpace()));
                 }
+                node.setParamSpace(currentScope.getParameterSpace());
                 node.setParams(actualParams);
             } else {
                 staticError("wrong number of parameters", node.getLocation());
