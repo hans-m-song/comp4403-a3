@@ -386,11 +386,41 @@ public class StackMachine {
      */
     private Operation[] getOperation = Operation.values();
 
+    private String bin(int val) {
+        return Integer.toBinaryString(val);
+    }
+
+    private String pad(String original) {
+        StringBuilder out = new StringBuilder(original);
+        while (out.length() < 15) {
+            out.append(" ");
+        }
+        return out.toString();
+    }
+
+    private void debugStack() {
+        for (int i = STACK_START; i < sp; i++) {
+            StringBuffer out = new StringBuffer();
+            if (i == fp) {
+                out.append(" FP: ");
+            } else {
+                out.append("     ");
+            }
+            int n = out.length();
+            out.append(i);
+            pad(out, n + 4);
+            out.append(": ");
+            out.append(memory[i]);
+            System.out.println(out);
+        }
+    }
+
     /**
      * Execute the instruction pointed to by the pc register,
      * and adjust pc to point to the next instruction.
      */
     private void execInstruction() {
+        int a, b, c;
         if (pc < CODE_START || pc >= currLocn) {
             runtimeError("PC = " + pc + " out of range of code");
             return;
@@ -411,6 +441,7 @@ public class StackMachine {
             }
             outStream.print(out);
         }
+        System.out.print(pad(inst.toString()));
         switch (inst) {
             case NO_OP: /* Do nothing */
                 break;
@@ -481,6 +512,8 @@ public class StackMachine {
                 /* It is assumed that the top of stack contains the number of
                  * words to be allocated on the stack. */
                 int locs = pop(); /* size in words */
+                System.out.println(locs);
+                debugStack();
                 if (locs < 0) {
                     runtimeError("allocating a negative number of locations on stack");
                 }
@@ -492,6 +525,7 @@ public class StackMachine {
                 break;
             case DEALLOC_STACK: /* Remove locations from the stack */
                 int nwords = pop(); /* Number of words for to deallocate */
+                System.out.println(nwords);
                 if (nwords < 0) {
                     runtimeError("deallocating a negative number of locations on stack");
                 }
@@ -528,21 +562,39 @@ public class StackMachine {
                 push(pop() * pop());
                 break;
             case ADD: /* Add */
-                push(pop() + pop());
+                a = pop();
+                b = pop();
+                c = a + b;
+                System.out.print(a + " + " + b + " -> " + c);
+                push(c);
                 break;
             case XOR: /* Bitwise XOR */
-                push(pop() ^ pop());
+                a = pop();
+                b = pop();
+                c = a ^ b;
+                System.out.print(bin(a) + " ^ " + bin(b) + " -> " + bin(c) + " " + c);
+                push(c);
                 break;
             case OR: /* Bitwise OR */
-                push(pop() | pop());
+                a = pop();
+                b = pop();
+                c = a | b;
+                System.out.print(bin(a) + " | " + bin(b) + " -> " + bin(c) + " " + c);
+                push(c);
                 break;
             case AND: /* Bitwise AND */
-                push(pop() & pop());
+                a = pop();
+                b =  pop();
+                c = a & b;
+                System.out.print(bin(a) + " & " + bin(b) + " -> " + bin(c) + " " + c);
+                push(c);
                 break;
             case SHIFT_LEFT: /* Shift second top left number of place in top */
                 int shift_count = pop();
                 int shift_val = pop();
-                push(shift_val << shift_count);
+                c = shift_val << shift_count;
+                System.out.print(shift_val + " << " + shift_count + " -> " + bin(c) + " " + c);
+                push(c);
                 break;
             case SHIFT_RIGHT: /* Shift second top right number of place in top */
                 shift_count = pop();
@@ -550,12 +602,18 @@ public class StackMachine {
                 push(shift_val >> shift_count);
                 break;
             case EQUAL: /* Test if top two values are equal */
-                push(pop() == pop() ? Type.TRUE_VALUE : Type.FALSE_VALUE);
+                a = pop();
+                b = pop();
+                c = a == b ? Type.TRUE_VALUE : Type.FALSE_VALUE;
+                System.out.print(a + " = " + b + " -> " + c);
+                push(c);
                 break;
             case LESS: /* Test if second top value < top value */
                 int top = pop();
                 int second = pop();
-                push(second < top ? Type.TRUE_VALUE : Type.FALSE_VALUE);
+                c = second < top ? Type.TRUE_VALUE : Type.FALSE_VALUE;
+                System.out.print(second + " < " + top + " -> " + c);
+                push(c);
                 break;
             case LESSEQ: /* Test if second top value <= top value */
                 top = pop();
@@ -566,7 +624,10 @@ public class StackMachine {
                 push(~pop());
                 break;
             case NEGATE: /* 2s complement */
-                push(-pop());
+                a = pop();
+                b = -a;
+                System.out.print(bin(a) + " -> " + bin(b));
+                push(b);
                 break;
             case READ: /* Read a number from stdin */
                 int read;
@@ -578,7 +639,10 @@ public class StackMachine {
                 }
                 break;
             case WRITE: /* Write a number to stdout */
-                outStream.println(pop());
+                a = pop();
+                System.out.print(a + "\n");
+                debugStack();
+                outStream.println(a);
                 break;
             case BOUND: /* Check if index is within bounds, halt if not.
                 This needs to be an instruction to write the error */
@@ -592,12 +656,17 @@ public class StackMachine {
                 push(val); /* push the value back on the stack */
                 break;
             case TO_GLOBAL: /* Adjust local to global */
-                push(pop() + fp);
+                c = pop();
+                System.out.println(c + " + " + fp + " -> " + (c + fp));
+                push(c + fp);
                 break;
             case TO_LOCAL: /* Adjust a global address to a frame-local one */
-                push(pop() - fp);
+                c = pop();
+                System.out.println(c + " + " + fp + " -> " + (c + fp));
+                push(c - fp);
                 break;
             case LOAD_CON: /* Load a constant value from the following word */
+                System.out.print(memory[pc]);
                 push(memory[pc++]);
                 break;
             case LOAD_ABS: /* Load a value from address in top of stack */
@@ -607,11 +676,15 @@ public class StackMachine {
             case STORE_FRAME: /* Store a value into memory */
                 address = fp + pop();
                 int value = pop();
+                System.out.print(address + " <= " + value);
                 storeValue(address, value);
                 break;
             case LOAD_FRAME: /* Load a value from memory frame relative */
                 address = fp + pop();
-                push(loadValue(address));
+                c = loadValue(address);
+                System.out.print(address + " => " + c);
+                push(c);
+                c = -2078277632;
                 break;
             case ZERO: /* Push 0 on the stack */
                 push(0);
@@ -657,5 +730,6 @@ public class StackMachine {
             default:
                 runtimeError("opcode not implemented: " + inst);
         }
+        System.out.print("\n");
     }
 }
