@@ -374,7 +374,8 @@ public class CodeGenerator implements DeclVisitor, StatementTransform<Code>,
                 break;
             case DIFFERENCE_OP:
                 code = genArgs(left, right);
-                code.generateOp(Operation.XOR);
+                code.generateOp(Operation.NOT);
+                code.generateOp(Operation.AND);
                 break;
             default:
                 errors.fatal("PL0 Internal error: Unknown operator",
