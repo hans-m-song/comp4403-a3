@@ -192,11 +192,21 @@ public class StaticChecker implements DeclVisitor, StatementVisitor,
             List<ExpNode> actualParams = node.getParams();
             if (formalParams.size() == actualParams.size()) {
                 for (int i = 0; i < formalParams.size(); i++) {
-                    ExpNode actualParam = actualParams.get(i);
+                    ExpNode actualParam = actualParams.get(i).transform(this);
                     SymEntry.ParamEntry formalParam = formalParams.get(i);
-                    // TODO var params?
-                    ExpNode coerced = formalParam.getType()
-                            .getBaseType().coerceExp(actualParam.transform(this));
+                    ExpNode coerced;
+                    if (
+                            formalParam.isRef()
+                            && !formalParam.getType().equals(actualParam.getType())
+                    ) {
+                        staticError("type should be "
+                                + formalParam.getType() + " not "
+                                + actualParam.getType(), actualParam.getLocation());
+                        coerced = new ExpNode.ErrorNode(actualParam.getLocation());
+                    } else {
+                        coerced = formalParam.getType().getBaseType()
+                                    .coerceExp(actualParam);
+                    }
                     actualParams.set(i, coerced);
                 }
                 node.setParams(actualParams);
