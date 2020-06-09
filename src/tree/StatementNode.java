@@ -283,7 +283,6 @@ public abstract class StatementNode {
         private final String id;
         private SymEntry.ProcedureEntry procEntry;
         private List<ExpNode> params;
-        private int paramSpace;
 
         public CallNode(Location loc, String id) {
             super(loc);
@@ -316,14 +315,6 @@ public abstract class StatementNode {
 
         public void setEntry(SymEntry.ProcedureEntry entry) {
             this.procEntry = entry;
-        }
-
-        public int getParamSpace() {
-            return paramSpace;
-        }
-
-        public void setParamSpace(int paramSpace) {
-            this.paramSpace = paramSpace;
         }
 
         @Override
