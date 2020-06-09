@@ -173,20 +173,36 @@ public class CodeGenerator implements DeclVisitor, StatementTransform<Code>,
         SymEntry.ProcedureEntry proc = node.getEntry();
         Code code = new Code();
         code.genComment("call:");
-        code.genAllocStack(node.getParamSpace());
-        /* Generate the call instruction. The second parameter is the
-         * procedure's symbol table entry. The actual address is resolved
-         * at load time.
-         */
         List<SymEntry.ParamEntry> formalParams = proc.getType().getFormalParams();
         List<ExpNode> actualParams = node.getParams();
         for (int i = formalParams.size() - 1; i > -1; i--) {
             SymEntry.ParamEntry formalParam = formalParams.get(i);
+            Type paramType = formalParam.getType().optDereferenceType();
             ExpNode param = actualParams.get(i);
-            code.append(load(param));
+            code.append(param.genCode(this));
+            if (paramType instanceof Type.SubrangeType) {
+                Type.SubrangeType bounds = (Type.SubrangeType) paramType;
+                code.genBoundsCheck(bounds.getLower(), bounds.getUpper());
+            }
+            if (formalParam.isRef()) {
+                code.generateOp(Operation.TO_GLOBAL);
+            }
         }
+        /* Generate the call instruction. The second parameter is the
+         * procedure's symbol table entry. The actual address is resolved
+         * at load time.
+         */
         code.genCall(staticLevel - proc.getLevel(), proc);
-        code.genDeallocStack(node.getParamSpace());
+        for (int i = 0; i < formalParams.size(); i++) {
+            if (formalParams.get(i).isRef()) {
+                ExpNode.DereferenceNode actualParam = (ExpNode.DereferenceNode) actualParams.get(i);
+                code.append(actualParam.getLeftValue().genCode(this)); // var location
+                code.genStore(actualParam.getType());
+            } else {
+                code.generateOp(Operation.POP);
+            }
+        }
+//        code.genDeallocStack(node.getParamSpace());
         endGen("Call");
         return code;
     }
